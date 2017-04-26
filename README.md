@@ -2,8 +2,8 @@
 
 You will find in this repository a simple example to generate scientific reports from a Markdown file using:
 
-- ![pandoc](http://pandoc.org)
-- ![pandoc-citeproc](https://github.com/jgm/pandoc-citeproc)
+- [pandoc](http://pandoc.org)
+- [pandoc-citeproc](https://github.com/jgm/pandoc-citeproc)
 - `pdflatex` and associated packages
 - `html` and `latex` templates
 - citation style `csl` files
