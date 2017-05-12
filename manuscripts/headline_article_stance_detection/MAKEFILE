@@ -1,4 +1,4 @@
 html:
-	pandoc -s --filter=pandoc-citeproc --bibliography=citations.bib --csl=cstyles/nature.csl --mathjax --template=templates/html.template --css=templates/kultiad-serif.css -o test.html test.md
+	pandoc -s --filter=pandoc-citeproc --bibliography=citations.bib --csl=cstyles/nature.csl --mathjax --template=templates/html.template --css=templates/kultiad-serif.css -o headline_article_stance_detection.html headline_article_stance_detection.md
 pdf:
-	pandoc -s --filter=pandoc-citeproc --bibliography=citations.bib --csl=cstyles/nature.csl --mathjax --template=templates/template.tex -o test.pdf test.md
+	pandoc -s --filter=pandoc-citeproc --bibliography=citations.bib --csl=cstyles/nature.csl --mathjax --template=templates/template.tex -o headline_article_stance_detection.pdf headline_article_stance_detection.md
