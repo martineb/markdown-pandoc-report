@@ -7,6 +7,6 @@ if [[ $FOLDER_NAME == '' ]]; then
 else
 	cp -r templates $FOLDER_NAME/
 	cp -r cstyles $FOLDER_NAME/
-	cp MAKEFILE $FOLDER_NAME/
+	cp Makefile $FOLDER_NAME/
 	cp citations.bib $FOLDER_NAME/
 fi
