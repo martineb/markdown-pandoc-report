@@ -30,21 +30,19 @@ Given the above distribution, it is expected that a machine learning approach to
 
 ## Classification of stances using Sentence Vectors Sequences and a Long Short-Term Memory Network
 
-The goal is to attribute to a given headline-article pair one of four stances: **agree**, **disagree**, **discusses**, or **unrelated**. We hypothesize that an article has a particular structure that combined with the headline can be used to predict the stance. To learn from such a structure we propose to first encode each document as a series of feature vectors representing the sentences sequence, a sort of *sentence embedding*. We train a *Doc2Vec* model [REF] on both the words and sentences corpora extracted from all the unique headlines and article bodies. This results in two embedding matrices, $\mathbf{M}_S$ and $\mathbf{M}_W$ for sentences and words respectively. Thus every sentence in the corpus can be represented by a vector of $N_f$ features.
+The goal is to attribute to a given headline-article pair one of four stances: **agree**, **disagree**, **discusses**, or **unrelated**. We hypothesize that an article has a particular structure that combined with the headline can be used to predict the stance. To learn from such a structure we propose to first encode each document as a series of feature vectors representing the sentences sequence, a sort of *sentence embedding* which is similar in spirit to [REF]. We train a *Doc2Vec* model [REF] on both the words and sentences corpora extracted from all the unique headlines and article bodies. This results in two embedding matrices, $\mathbf{M}_S$ and $\mathbf{M}_W$ for sentences and words respectively. Thus every sentence and headline in the corpus can be represented by a vector of $N_f$ features. Furthermore, the feature vector of a new sentence can be inferred by briefly training only $\mathbf{M}_S$ upon addition of said sentence.
 
-We encode the $i$-th headline-article pair's structure in a matrix $\mathbf{X}_i$ wherein the $j$-th row is the vector representation of sentence $\vec{S_{ij}}$ translated relative to the headline's vector $\vec h_i$:
+We encode the $i$-th headline-article pair's structure in a $N_f\times N_s$ matrix $\mathbf{X}_i$ wherein the $j$-th row is the vector representation of sentence $\vec{S_{ij}}$ translated relative to the headline's vector $\vec h_i$ with a maximum of $N_s$ sentences:
 
 $$
 \mathbf{X}_i = \left(\vec{S'_{ij}}\right) = \left(\vec{S_{ij}} - \vec{h_i}\right)
 $$
 
-Hence for the $i$-th document we have a set $\{\vec{S'_{ij}}\}$ of $N_i$ feature vectors of length $L$. These features are then used to train a deep neural network (DNN) classifier that consists of the following:
+**The rows of $\mathbf{X}_i$ are then sequentially fed into a stacked Bidirectional Recurrent Neural Network with Gated-Recurrent Unit cells (sBiGRU) with Context Attention (CA) as implemented in [REF]**.
 
-- three long-short term memory (LSTM) layers that take in tensors of the shape $(N_{\mathrm{batches}}, N_{\mathrm{sentences}}, L)$ and output a tensor of shape $(N_{\mathrm{batches}}, N_1)$
-- a fully-connected layer with a linear activation function that takes for input the output of the above and ouputs a tensor of shape $(N_{\mathrm{batches}}, N_2)$
-- a fully-connected layer with a softmax activation function that takes for input the output of the above and outputs a tensor of shape $(N_{\mathrm{batches}}, N_{\mathrm{classes}})$
+## Future work
 
-Once the DNN is trained and validated , it is scored using the method proposed by the FNC team and found in *score.py*.
+- Try a form of attention that would allow to see on which sentence pattern corresponds to which stance.
 
 
 
