@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link rel="stylesheet" href="../../templates/kultiad-serif.css">
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+</head>
+<body>
+
+
+
+<h1 id="fake-news-detection">Fake News Detection</h1>
+<p>We are exploring ways of detecting stances of documents a-la <a href="http://http://www.fakenewschallenge.org/">Fake News Challenge</a>. The challenge itself consists in being able to correctly identify the relationship between the headline and the body of an article as one of the following four options:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Agree</strong></li>
+<li><strong>Disagree</strong></li>
+<li><strong>Discusses</strong></li>
+<li><strong>Unrelated</strong></li>
+</ol>
+<p>The usefulness of such a classification task is justified in the following way on the <a href="http://http://www.fakenewschallenge.org/">Fake News Challenge</a> website:</p>
+<blockquote>
+<p>There are two important ways the Stance Detection task is relevant for fake news.</p>
+<ol style="list-style-type: decimal">
+<li><p>From our discussions with real-life fact checkers, we realized that gathering the relevant background information about a claim or news story, including all sides of the issue, is a critical initial step in a human fact checker’s job. One goal of the Fake News Challenge is to push the state-of-the-art in assisting human fact checkers, by helping them quickly gather the information they need to make their assessment. <br/><br/>In particular, a good Stance Detection solution would allow a human fact checker to enter a claim or headline and instantly retrieve the top articles that agree, disagree or discuss the claim/headline in question. They could then look at the arguments for and against the claim, and use their human judgment and reasoning skills to assess the validity of the claim in question. Such a tool would enable human fact checkers to be fast and effective.</p></li>
+<li><p>It should be possible to build a prototype post-facto “truth labeling” system from a “stance detection” system. Such a system would tentatively label a claim or story as true/false based on the stances taken by various news organizations on the topic, weighted by their credibility. <br/><br/>For example, if several high-credibility news outlets run stories that Disagree with a claim (e.g. “Denmark Stops Issuing Travel Visas to US Citizens”) the claim would be provisionally labeled as False. Alternatively, if a highly newsworthy claim (e.g. “British Prime Minister Resigns in Disgrace”) only appears in one very low-credibility news outlet, without any mention by high-credibility sources despite its newsworthiness, the claim would be provisionally labeled as False by such a truth labeling system. <br/><br/>In this way, the various stances (or lack of a stance) news organizations take on a claim, as determined by an automatic stance detection system, could be combined to tentatively label the claim as True or False. While crude, this type of fully-automated approach to truth labeling could serve as a starting point for human fact checkers, e.g. to prioritize which claims are worth further investigation.</p></li>
+</ol>
+</blockquote>
+<h2 id="fake-news-challenge-data">Fake News Challenge Data</h2>
+<p>The fake news challenge provides a dataset with a number of headlines and article bodies associated in 49972 pairs such that we have the following stances distribution:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Stance</th>
+<th align="left">Percent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><strong>Agree</strong></td>
+<td align="left">7.36</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>Disagree</strong></td>
+<td align="left">1.68</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>Discuss</strong></td>
+<td align="left">17.83</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>Unrelated</strong></td>
+<td align="left">73.13</td>
+</tr>
+</tbody>
+</table>
+<p>Given the above distribution, it is expected that a machine learning approach to headline-body stance classification will result in a better accuracy for those pairs that are unrelated than those that disagree.</p>
+<h2 id="classification-of-stances-using-sentence-vectors-sequences-and-a-long-short-term-memory-network">Classification of stances using Sentence Vectors Sequences and a Long Short-Term Memory Network</h2>
+<p>The goal is to attribute to a given headline-article pair one of four stances: <strong>agree</strong>, <strong>disagree</strong>, <strong>discusses</strong>, or <strong>unrelated</strong>. We hypothesize that an article has a particular structure that combined with the headline can be used to predict the stance. To learn from such a structure we propose to first encode each document as a series of feature vectors representing the sentences sequence, a sort of <em>sentence embedding</em> which is similar in spirit to [REF]. We train a <em>Doc2Vec</em> model [REF] on both the words and sentences corpora extracted from all the unique headlines and article bodies. This results in two embedding matrices, <span class="math inline">\(\mathbf{M}_S\)</span> and <span class="math inline">\(\mathbf{M}_W\)</span> for sentences and words respectively. Thus every sentence and headline in the corpus can be represented by a vector of <span class="math inline">\(N_f\)</span> features. Furthermore, the feature vector of a new sentence can be inferred by briefly training only <span class="math inline">\(\mathbf{M}_S\)</span> upon addition of said sentence.</p>
+<p>We encode the <span class="math inline">\(i\)</span>-th headline-article pair's structure in a <span class="math inline">\(N_f\times N_s\)</span> matrix <span class="math inline">\(\mathbf{X}_i\)</span> wherein the <span class="math inline">\(j\)</span>-th row is the vector representation of sentence <span class="math inline">\(\vec{S_{ij}}\)</span> translated relative to the headline's vector <span class="math inline">\(\vec h_i\)</span> with a maximum of <span class="math inline">\(N_s\)</span> sentences:</p>
+<p><span class="math display">\[
+\mathbf{X}_i = \left(\vec{S&#39;_{ij}}\right) = \left(\vec{S_{ij}} - \vec{h_i}\right)
+\]</span></p>
+<p>The rows of <span class="math inline">\(\mathbf{X}_i\)</span> are then sequentially fed into a stacked Bidirectional Recurrent Neural Network with Gated-Recurrent Unit cells (sBiGRU) with Context Attention (CA) as implemented in [REF].</p>
+<h2 id="future-work">Future work</h2>
+</body>
+</html>
